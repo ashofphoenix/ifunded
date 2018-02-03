@@ -10,6 +10,11 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use AppBundle\Entity\Article;
 use AppBundle\Form\ArticleType;
 
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+use FOS\UserBundle\Model\UserInterface;
+
+
 /**
  * Article controller.
  *
@@ -17,7 +22,6 @@ use AppBundle\Form\ArticleType;
  */
 class ArticleController extends Controller
 {
-
     /**
      * Lists all Article entities.
      *
@@ -27,6 +31,12 @@ class ArticleController extends Controller
      */
     public function indexAction()
     {
+        $user = $this->container->get('security.context')->getToken()->getUser();
+        //var_dump($user->getRoles());
+        if (!is_object($user) || !$user instanceof UserInterface) {
+            throw new AccessDeniedException('This user does not have access to this section.');
+        }
+
         $em = $this->getDoctrine()->getManager();
 
         $entities = $em->getRepository('AppBundle:Article')->findAll();
@@ -90,13 +100,19 @@ class ArticleController extends Controller
      */
     public function newAction()
     {
-        $entity = new Article();
-        $form   = $this->createCreateForm($entity);
+        if ($this->get('security.context')->isGranted('ROLE_ADMIN')) {
+            // Present add form
+            $entity = new Article();
+            $form   = $this->createCreateForm($entity);
 
-        return array(
-            'entity' => $entity,
-            'form'   => $form->createView(),
-        );
+            return array(
+                'entity' => $entity,
+                'form'   => $form->createView(),
+            );
+
+        }else {
+             throw new AccessDeniedException('This user does not have access to this section.');
+        }
     }
 
     /**
@@ -108,6 +124,12 @@ class ArticleController extends Controller
      */
     public function showAction($id)
     {
+        $user = $this->container->get('security.context')->getToken()->getUser();
+        //var_dump($user->getRoles());
+        if (!is_object($user) || !$user instanceof UserInterface) {
+            throw new AccessDeniedException('This user does not have access to this section.');
+        }
+
         $em = $this->getDoctrine()->getManager();
 
         $entity = $em->getRepository('AppBundle:Article')->find($id);
@@ -133,22 +155,28 @@ class ArticleController extends Controller
      */
     public function editAction($id)
     {
-        $em = $this->getDoctrine()->getManager();
+        if ($this->get('security.context')->isGranted('ROLE_ADMIN')) {
+            // Present edit form
+            $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('AppBundle:Article')->find($id);
+            $entity = $em->getRepository('AppBundle:Article')->find($id);
 
-        if (!$entity) {
-            throw $this->createNotFoundException('Unable to find Article entity.');
+            if (!$entity) {
+                throw $this->createNotFoundException('Unable to find Article entity.');
+            }
+
+            $editForm = $this->createEditForm($entity);
+            $deleteForm = $this->createDeleteForm($id);
+
+            return array(
+                'entity'      => $entity,
+                'edit_form'   => $editForm->createView(),
+                'delete_form' => $deleteForm->createView(),
+            );
+        }else {
+             throw new AccessDeniedException('This user does not have access to this section.');
         }
 
-        $editForm = $this->createEditForm($entity);
-        $deleteForm = $this->createDeleteForm($id);
-
-        return array(
-            'entity'      => $entity,
-            'edit_form'   => $editForm->createView(),
-            'delete_form' => $deleteForm->createView(),
-        );
     }
 
     /**

@@ -1,72 +1,45 @@
-Symfony Standard Edition
-========================
+NanoBlog based on Symfony Standard Edition along with FOSUserBundle
+===================================================================
 
-Welcome to the Symfony Standard Edition - a fully-functional Symfony
-application that you can use as the skeleton for your new applications.
-
-For details on how to download and get started with Symfony, see the
-[Installation][1] chapter of the Symfony Documentation.
-
-What's inside?
+Requirements?
 --------------
+PHP>5.3, MySql, Composer
+If you don't have Composer yet, download it following the instructions on
+http://getcomposer.org/ or just run the following command:
 
-The Symfony Standard Edition is configured with the following defaults:
+    curl -s http://getcomposer.org/installer | php
 
-  * An AppBundle you can use to start coding;
 
-  * Twig as the only configured template engine;
+Steps to install the nanoblog?
+--------------
+1) Fetch the repository using below command
+	`git clone https://github.com/ashofphoenix/ifunded.git`
 
-  * Doctrine ORM/DBAL;
+2) navigate into the project directory
+	`cd ifunded`
 
-  * Swiftmailer;
+3) To install the dependency run below command
+	`composer install`
 
-  * Annotations enabled for everything.
+Fill in the details for database connection, make sure that the database exist (or create one using PhpMyAdmin or any GUI tool for navigating MySql)
 
-It comes pre-configured with the following bundles:
+4) Run the below command to make database table from entities
+	`php app/console doctrine:schema:update --force`
 
-  * **FrameworkBundle** - The core Symfony framework bundle
+5) Create an admin user using below command
+	`php app/console fos:user:create admin --super-admin`
+	This will create an admin user with privilegas to add/edit the articles
 
-  * [**SensioFrameworkExtraBundle**][6] - Adds several enhancements, including
-    template and routing annotation capability
+6) Run the below command to run the built-in server
+	`php app/console server:run`
 
-  * [**DoctrineBundle**][7] - Adds support for the Doctrine ORM
+7) Browse the application at  http://127.0.0.1:8000 from a browser
+   You can now login using the admin user created in step5.After login succesfully you can create new articles.
 
-  * [**TwigBundle**][8] - Adds support for the Twig templating engine
+Additional Notes
+----------------
 
-  * [**SecurityBundle**][9] - Adds security by integrating Symfony's security
-    component
+To create a normal user you can issue the below command
+	`php app/console fos:user:create testuser test@example.com 123456`
+When one login with the above created normal user one can only see the listing and details of articles, without add/edit previlages.
 
-  * [**SwiftmailerBundle**][10] - Adds support for Swiftmailer, a library for
-    sending emails
-
-  * [**MonologBundle**][11] - Adds support for Monolog, a logging library
-
-  * [**AsseticBundle**][12] - Adds support for Assetic, an asset processing
-    library
-
-  * **WebProfilerBundle** (in dev/test env) - Adds profiling functionality and
-    the web debug toolbar
-
-  * **SensioDistributionBundle** (in dev/test env) - Adds functionality for
-    configuring and working with Symfony distributions
-
-  * [**SensioGeneratorBundle**][13] (in dev/test env) - Adds code generation
-    capabilities
-
-  * **DebugBundle** (in dev/test env) - Adds Debug and VarDumper component
-    integration
-
-All libraries and bundles included in the Symfony Standard Edition are
-released under the MIT or BSD license.
-
-Enjoy!
-
-[1]:  https://symfony.com/doc/2.7/setup.html
-[6]:  https://symfony.com/doc/current/bundles/SensioFrameworkExtraBundle/index.html
-[7]:  https://symfony.com/doc/2.7/doctrine.html
-[8]:  https://symfony.com/doc/2.7/templating.html
-[9]:  https://symfony.com/doc/2.7/security.html
-[10]: https://symfony.com/doc/2.7/email.html
-[11]: https://symfony.com/doc/2.7/logging.html
-[12]: https://symfony.com/doc/2.7/assetic/asset_management.html
-[13]: https://symfony.com/doc/current/bundles/SensioGeneratorBundle/index.html
